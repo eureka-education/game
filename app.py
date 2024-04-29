@@ -1,36 +1,29 @@
-# streamlitをインポート
 import streamlit as st
 import random
 
-# セッションステートを使用して、ターゲット番号と推測回数を記録
-if 'target' not in st.session_state:
-    st.session_state.target = random.randint(1, 100)
-    st.session_state.guesses = 0
-    st.session_state.correct = False
+# セッションステートを使ってスコアとターゲット位置を記録
+if 'score' not in st.session_state:
+    st.session_state.score = 0
+
+if 'target_position' not in st.session_state:
+    st.session_state.target_position = random.randint(1, 10)
 
 # ゲームのタイトル
-st.title("数当てゲーム")
+st.title("クリックターゲットゲーム")
 
-# ユーザーに推測を入力してもらう
-guess = st.number_input("1から100までの数を推測してください", min_value=1, max_value=100, step=1)
+# スコアを表示
+st.write(f"スコア: {st.session_state.score}")
 
-# 推測ボタン
-if st.button("推測"):
-    # 推測回数を増やす
-    st.session_state.guesses += 1
-    
-    # ユーザーの推測がターゲットに近いかどうかをチェック
-    if guess < st.session_state.target:
-        st.write("小さすぎます！")
-    elif guess > st.session_state.target:
-        st.write("大きすぎます！")
+# ランダムな位置にターゲットを配置
+target_position = st.session_state.target_position
+
+# ボタンを作成して、ターゲットの位置に合わせる
+for i in range(1, 11):
+    if i == target_position:
+        if st.button(f"クリックして得点 {i}"):
+            st.session_state.score += 1
+            # ターゲットを新しい位置に移動
+            st.session_state.target_position = random.randint(1, 10)
+            st.experimental_rerun()  # リフレッシュしてターゲットを移動
     else:
-        st.write("正解！")
-        st.write(f"推測回数: {st.session_state.guesses}")
-        st.session_state.correct = True
-
-# ゲームをリセットするボタン
-if st.session_state.correct and st.button("ゲームをリセット"):
-    st.session_state.target = random.randint(1, 100)
-    st.session_state.guesses = 0
-    st.session_state.correct = False
+        st.button(f"ボタン {i}")  # クリックできないボタン
